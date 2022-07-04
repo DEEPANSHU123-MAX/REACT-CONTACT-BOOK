@@ -1,57 +1,56 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { connect } from "react-redux";
 import { useHistory, useParams } from "react-router";
 import { toast } from "react-toastify";
+import { useDispatch , useSelector } from "react-redux";
+import { UPDATE_CONTACT } from "../../redux/reducers/contactReducer";
 
-const EditContact = ({ contacts, updateContact }) => {
+const EditContact = ({updateContact}) => {
+  
   const { id } = useParams();
   const history = useHistory();
-  const currentContact = contacts.find(
-    (contact) => contact.id === parseInt(id)
-  );
-
+  const dispatch = useDispatch();
+  const contacts = useSelector(state => state)
+  
+  const currentContact =useRef(Object.values(contacts.contactReducer).filter(contact=>
+    
+    contact.id === parseInt(id)
+    ))
+    console.log(currentContact)
+  
+ 
+    const [name, setName] = useState("");
+    const [author, setAuthor] = useState("");
+    const [phone, setPhone] = useState("");
+    
   useEffect(() => {
-    setName(currentContact.name);
-    setEmail(currentContact.email);
-    setPhone(currentContact.phone);
+    setName(currentContact.current[0].name);
+    setAuthor(currentContact.current[0].author);
+    setPhone(currentContact.current[0].phone);
   }, [currentContact]);
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const checkContactEmailExists = contacts.filter((contact) =>
-      contact.email === email && contact.id !== currentContact.id
-        ? contact
-        : null
-    );
-    const checkContactPhoneExists = contacts.filter((contact) =>
-      contact.phone === phone && contact.id !== currentContact.id
-        ? contact
-        : null
-    );
+   
 
-    if (!email || !name || !phone) {
-      return toast.warning("Please fill in all fields!!");
-    }
-    if (checkContactEmailExists.length > 0) {
-      return toast.error("This email already exists!!");
-    }
-    if (checkContactPhoneExists.length > 0) {
-      return toast.error("This phone number already exists!!");
-    }
+    // if (!email || !name || !phone) {
+    //   return toast.warning("Please fill in all fields!!");
+    // }
+   
 
     const data = {
-      id: currentContact.id,
-      email,
+      id: currentContact.current[0].id,
+      author,
       name,
-      phone,
+     
     };
+    console.log(name)
+    
 
     updateContact(data);
-    toast.success("Contact updated successfully!!");
+    toast.success("Quotes updated successfully!!");
     history.push("/");
   };
 
@@ -72,28 +71,31 @@ const EditContact = ({ contacts, updateContact }) => {
                   className="form-control"
                   value={name}
                   placeholder={"Name"}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    console.log(e.target.value)
+                    setName(e.target.value)}
+                  }
                 />
               </div>
               <div className="form-group">
                 <input
                   className="form-control"
-                  value={email}
+                  value={author}
                   placeholder={"Email"}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => setAuthor(e.target.value)}
                 />
               </div>
-              <div className="form-group">
+              {/* <div className="form-group">
                 <input
                   className="form-control"
                   value={phone}
                   placeholder={"Phone"}
                   onChange={(e) => setPhone(e.target.value)}
                 />
-              </div>
+              </div> */}
               <div className="form-group d-flex align-items-center justify-content-between my-2">
                 <button type="submit" className="btn btn-primary">
-                  Update Contact
+                  Update quote
                 </button>
                 <button
                   type="button"
@@ -113,13 +115,11 @@ const EditContact = ({ contacts, updateContact }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  contacts: state,
-});
+
 const mapDispatchToProps = (dispatch) => ({
   updateContact: (data) => {
-    dispatch({ type: "UPDATE_CONTACT", payload: data });
+    dispatch(UPDATE_CONTACT(data));
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditContact);
+export default connect(null, mapDispatchToProps)(EditContact);

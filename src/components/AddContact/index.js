@@ -2,20 +2,38 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import { useHistory } from "react-router";
 import { toast } from "react-toastify";
+import { useDispatch , useSelector } from "react-redux";
+import { ADD_CONTACT } from "../../redux/reducers/contactReducer";
+import { constant } from "lodash";
 
-const AddPost = ({ contacts, addContact }) => {
+const AddPost = ({  addContact }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+
+  const {contactReducer} =useSelector(state => state)
+  const contacts = useSelector(state => state)
+  console.log(contacts)
+ 
+  const dispatch = useDispatch();
+
 
   const history = useHistory();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const checkContactEmailExists = contacts.filter((contact) =>
+    if(Object.keys(contacts).length!=0){
+    
+
+    const checkContactEmailExists =Object.values(contacts).filter(contact=>
       contact.email === email ? contact : null
-    );
-    const checkContactPhoneExists = contacts.filter((contact) =>
+      
+      )
+
+
+     
+  
+    const checkContactPhoneExists = Object.values(contacts).filter((contact) =>
       contact.phone === phone ? contact : null
     );
 
@@ -28,15 +46,16 @@ const AddPost = ({ contacts, addContact }) => {
     if (checkContactPhoneExists.length > 0) {
       return toast.error("This phone number already exists!!");
     }
-
+  }
+  console.log(name ,"----");
     const data = {
-      id: contacts.length > 0 ? contacts[contacts.length - 1].id + 1 : 0,
+      id:  Date.now(),
       email,
       name,
       phone,
     };
 
-    addContact(data);
+    dispatch( ADD_CONTACT(data) );
     toast.success("Contact added successfully!!");
     history.push("/");
   };
@@ -88,13 +107,9 @@ const AddPost = ({ contacts, addContact }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  contacts: state,
-});
-const mapDispatchToProps = (dispatch) => ({
-  addContact: (data) => {
-    dispatch({ type: "ADD_CONTACT", payload: data });
-  },
-});
+// const mapStateToProps = (state) => ({
+//   contacts: state,
+// });
 
-export default connect(mapStateToProps, mapDispatchToProps)(AddPost);
+
+export default AddPost;

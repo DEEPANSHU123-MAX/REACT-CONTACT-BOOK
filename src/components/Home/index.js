@@ -1,10 +1,23 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+import { useDispatch , useSelector } from "react-redux";
+import { DELETE_CONTACT , EDIT_CONTACT } from "../../redux/reducers/contactReducer";
 
-const Home = ({ contacts, deleteContact }) => {
+const Home = () => {
+ const dispatch = useDispatch();
+
+  const contacts = useSelector(state => state)
+  const contact = (Object.values(contacts.contactReducer))
+  console.log(contact);
+  console.log(contacts);
+
+
+
   return (
+    
     <div className="container">
+     
       <div className="row d-flex flex-column">
         <Link to="/add" className="btn btn-outline-dark my-5 ml-auto ">
           Add Contact
@@ -21,9 +34,14 @@ const Home = ({ contacts, deleteContact }) => {
               </tr>
             </thead>
             <tbody>
-              {contacts.length > 0 ? (
-                contacts.map((contact, id) => (
-                  <tr key={id}>
+              {contact.length > 0?(
+                
+                contact.map((contact, id) => (
+                  <>
+                    {contact.name ?( 
+                    
+                    <tr key={id}>
+                    
                     <td>{id + 1}</td>
                     <td>{contact.name}</td>
                     <td>{contact.email}</td>
@@ -37,19 +55,24 @@ const Home = ({ contacts, deleteContact }) => {
                       </Link>
                       <button
                         type="button"
-                        onClick={() => deleteContact(contact.id)}
+                        onClick={() => dispatch(DELETE_CONTACT(contact.id))}
                         className="btn btn-sm btn-danger"
                       >
                         Delete
                       </button>
                     </td>
-                  </tr>
+                  </tr>): "" }
+               
+                  </>
+                  
+                 
                 ))
-              ) : (
+              ):(
                 <tr>
                   <th>No contacts found</th>
                 </tr>
-              )}
+              )
+              }
             </tbody>
           </table>
         </div>
@@ -58,14 +81,14 @@ const Home = ({ contacts, deleteContact }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  contacts: state,
-});
+// const mapStateToProps = (state) => ({
+//   contacts: state,
+// });
 
-const mapDispatchToProps = (dispatch) => ({
-  deleteContact: (id) => {
-    dispatch({ type: "DELETE_CONTACT", payload: id });
-  },
-});
+// const mapDispatchToProps = (dispatch) => ({
+//   deleteContact: (id) => {
+//     dispatch({ type: "DELETE_CONTACT", payload: id });
+//   },
+// });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default (Home);

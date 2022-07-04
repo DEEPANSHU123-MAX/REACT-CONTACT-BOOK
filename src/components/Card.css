@@ -1,0 +1,16 @@
+.quote{
+   margin: auto;
+   width: 100%;
+   max-width: 500px;
+   min-height: 220px;
+   padding: 30px;
+   background-color:burlywood;
+   border-radius: 6px;
+   box-shadow: 2px 2px 5px black;
+   
+   
+   justify-content: space-between;
+   
+   
+
+}
